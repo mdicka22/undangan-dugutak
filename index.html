@@ -403,6 +403,7 @@ p.lead{font-size:14px;line-height:1.95;color:var(--ink-soft);font-weight:300;mar
   box-shadow:0 14px 28px -14px rgba(125,74,90,.85);transition:.25s;
 }
 .btn-submit:hover{transform:translateY(-2px);}
+.btn-submit:disabled{opacity:.6;cursor:wait;transform:none;}
 .btn-wa{
   width:100%;margin-top:10px;padding:14px;border-radius:14px;display:block;text-align:center;
   border:1px solid var(--rose-300);color:var(--plum);background:rgba(255,255,255,.6);
@@ -716,8 +717,7 @@ p.lead{font-size:14px;line-height:1.95;color:var(--ink-soft);font-weight:300;mar
       <button type="submit" class="btn-submit">Kirim Konfirmasi</button>
       <a class="btn-wa" id="btnWa" href="#" target="_blank" rel="noopener">Kirim juga via WhatsApp</a>
       <p class="form-hint">
-        Tanpa kado, tanpa amplop. Cukup kehadiran dan doa Bapak/Ibu/Saudara/i —
-        itu sudah lebih dari cukup bagi kami.
+        Kehadiran dan doa Bapak/Ibu/Saudara/i sudah lebih dari cukup bagi kami.
       </p>
     </form>
   </section>
@@ -835,6 +835,10 @@ const CONFIG = {
 
   // Nomor WhatsApp penerima konfirmasi (format 62..., tanpa + dan tanpa spasi)
   waNomor   : "6282304016229",   // 0823-0401-6229
+
+  // Alamat Web App Google Apps Script (rekap RSVP ke spreadsheet).
+  // Kosongkan ("") bila ingin kembali menyimpan hanya di perangkat tamu.
+  sheetURL  : "https://script.google.com/macros/s/AKfycbx4xSW4v2c8Wteon9fq5pY9zS0y4gHqaGT-dxXmo440A5HZAEjdpEc5MhYCRajduf-G/exec",
 
   // Musik latar:
   //  - berisi nama file mp3 di folder yang sama
@@ -1285,6 +1289,62 @@ const STORE = "aqiqah_assyifa_rsvp_v1";
 const loadWishes = () => { try { return JSON.parse(localStorage.getItem(STORE)) || []; } catch { return []; } };
 const saveWishes = w => { try { localStorage.setItem(STORE, JSON.stringify(w)); } catch {} };
 
+/* --- Sambungan ke spreadsheet -------------------------------------------
+   SERVER  : data dari spreadsheet. null = belum berhasil dimuat,
+             sehingga tampilan jatuh ke cadangan lokal perangkat.
+   PENDING : baru dikirim, belum terbaca kembali dari spreadsheet.        */
+let SERVER = null, PENDING = [], MEMUAT = false;
+
+const currentData = () => (SERVER ? SERVER.concat(PENDING) : loadWishes());
+
+async function tarikDariSheet(){
+  if (!CONFIG.sheetURL) return false;
+  const ac = new AbortController();
+  const to = setTimeout(() => ac.abort(), 9000);
+  try{
+    const res = await fetch(CONFIG.sheetURL, { signal: ac.signal });
+    const j = await res.json();
+    if (!j.ok || !Array.isArray(j.data)) return false;
+    /* buang baris judul kolom / baris rusak: wajib punya nama & waktu sah */
+    SERVER = j.data.filter(x =>
+      x && String(x.nama || "").trim() && Number(x.ts) > 0
+    ).map(x => ({
+      nama  : String(x.nama),
+      hadir : String(x.hadir || "Hadir"),
+      jumlah: String(x.jumlah || ""),
+      pesan : String(x.pesan || ""),
+      ts    : Number(x.ts) || Date.now()
+    }));
+    return true;
+  }catch(err){
+    return false;
+  }finally{
+    clearTimeout(to);
+  }
+}
+
+async function kirimKeSheet(data){
+  if (!CONFIG.sheetURL) return false;
+  const ac = new AbortController();
+  const to = setTimeout(() => ac.abort(), 12000);
+  try{
+    const res = await fetch(CONFIG.sheetURL, {
+      method : "POST",
+      /* text/plain dipakai agar tidak memicu preflight CORS,
+         yang tidak dilayani oleh Apps Script */
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body   : JSON.stringify(data),
+      signal : ac.signal
+    });
+    const j = await res.json();
+    return !!j.ok;
+  }catch(err){
+    return false;
+  }finally{
+    clearTimeout(to);
+  }
+}
+
 function waktuRelatif(ts){
   const d = Math.floor((Date.now() - ts) / 1000);
   if (d < 60) return "baru saja";
@@ -1299,7 +1359,7 @@ function tagClass(h){
 }
 
 function render(){
-  const w = loadWishes();
+  const w = currentData();
   const list = $("#wishList");
 
   $("#stHadir").textContent = w.filter(x => x.hadir === "Hadir").length;
@@ -1307,7 +1367,9 @@ function render(){
   $("#stTidak").textContent = w.filter(x => x.hadir === "Tidak Hadir").length;
 
   if (!w.length){
-    list.innerHTML = '<div class="wish-empty">Belum ada ucapan. Jadilah yang pertama mendoakan Ananda. &#128149;</div>';
+    list.innerHTML = MEMUAT
+      ? '<div class="wish-empty">Memuat ucapan&hellip;</div>'
+      : '<div class="wish-empty">Belum ada ucapan. Jadilah yang pertama mendoakan Ananda. &#128149;</div>';
     return;
   }
 
@@ -1326,7 +1388,11 @@ function render(){
     '</div>';
   }).join("");
 }
+
+/* tampilkan cadangan lokal dulu, lalu perbarui dari spreadsheet */
+MEMUAT = true;
 render();
+tarikDariSheet().then(() => { MEMUAT = false; render(); });
 
 /* Sembunyikan pilihan jumlah bila berhalangan */
 $$('input[name="hadir"]').forEach(r => r.addEventListener("change", () => {
@@ -1358,7 +1424,7 @@ $("#btnWa").addEventListener("click", function(e){
   this.href = pesanWa();
 });
 
-$("#rsvpForm").addEventListener("submit", e => {
+$("#rsvpForm").addEventListener("submit", async e => {
   e.preventDefault();
   const nama = $("#fNama").value.trim();
   if (!nama){ toast("Mohon isi nama terlebih dahulu"); return; }
@@ -1371,13 +1437,34 @@ $("#rsvpForm").addEventListener("submit", e => {
     ts    : Date.now()
   };
 
-  const w = loadWishes();
-  w.push(data);
-  saveWishes(w);
+  /* simpan cadangan di perangkat & tampilkan seketika */
+  const w = loadWishes(); w.push(data); saveWishes(w);
+  PENDING.push(data);
   render();
 
+  const btn = $(".btn-submit");
+  const labelAsli = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Mengirim…";
+
+  const terkirim = await kirimKeSheet(data);
+
+  btn.disabled = false;
+  btn.textContent = labelAsli;
   $("#fPesan").value = "";
-  toast("Terima kasih, " + nama.split(" ")[0] + "! Konfirmasi tersimpan ✓", 3600);
+
+  if (terkirim){
+    toast("Terima kasih, " + nama.split(" ")[0] + "! Konfirmasi terkirim ✓", 3600);
+    /* baca ulang agar ucapan tamu lain ikut tampil */
+    setTimeout(async () => {
+      if (await tarikDariSheet()){ PENDING = []; render(); }
+    }, 1400);
+  } else if (CONFIG.sheetURL){
+    toast("Tersimpan, namun gagal terkirim. Mohon gunakan tombol WhatsApp di bawah.", 5400);
+  } else {
+    toast("Terima kasih, " + nama.split(" ")[0] + "! Konfirmasi tersimpan ✓", 3600);
+  }
+
   setTimeout(() => $("#ucapan").scrollIntoView({ behavior: "smooth" }), 600);
 });
 
