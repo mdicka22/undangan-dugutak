@@ -21,8 +21,16 @@ navLinks.querySelectorAll('a').forEach(link => {
 // ══════════ MOTION PREFERENCE ══════════
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ══════════ COUNTDOWN → 20 Desember 2026 (dengan efek flip) ══════════
-const target = new Date('2026-12-20T08:00:00+07:00').getTime();
+// ══════════ COUNTDOWN (config-driven) ══════════
+// >>> CARA MENGAKTIFKAN HITUNG MUNDUR SAAT JADWAL SUDAH PASTI:
+//     Cukup isi tanggal & jam acara di baris EVENT_DATE ini (format ISO, zona Aceh +07:00),
+//     contoh: const EVENT_DATE = '2026-12-20T08:00:00+07:00';
+//     Biarkan null untuk menampilkan mode "TBA". Animasi flip & konsepnya tetap sama.
+const EVENT_DATE = null;
+
+const cdUnits = document.getElementById('cdUnits');
+const cdTba = document.getElementById('cdTba');
+const cdDate = document.getElementById('cdDate');
 const el = {
   d: document.getElementById('cd-d'),
   h: document.getElementById('cd-h'),
@@ -40,19 +48,32 @@ function setNum(node, val) {
   node.classList.add('flip');
 }
 
-function tick() {
-  let diff = Math.max(0, target - Date.now());
-  const d = Math.floor(diff / 86400000); diff -= d * 86400000;
-  const h = Math.floor(diff / 3600000); diff -= h * 3600000;
-  const m = Math.floor(diff / 60000); diff -= m * 60000;
-  const s = Math.floor(diff / 1000);
-  setNum(el.d, pad(d));
-  setNum(el.h, pad(h));
-  setNum(el.m, pad(m));
-  setNum(el.s, pad(s));
+if (EVENT_DATE) {
+  // MODE HITUNG MUNDUR
+  cdTba.style.display = 'none';
+  cdUnits.style.display = '';
+  const target = new Date(EVENT_DATE).getTime();
+  const label = new Date(EVENT_DATE).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  cdDate.innerHTML = label + ' &middot; Banda Aceh';
+  const tick = () => {
+    let diff = Math.max(0, target - Date.now());
+    const d = Math.floor(diff / 86400000); diff -= d * 86400000;
+    const h = Math.floor(diff / 3600000); diff -= h * 3600000;
+    const m = Math.floor(diff / 60000); diff -= m * 60000;
+    const s = Math.floor(diff / 1000);
+    setNum(el.d, pad(d));
+    setNum(el.h, pad(h));
+    setNum(el.m, pad(m));
+    setNum(el.s, pad(s));
+  };
+  tick();
+  setInterval(tick, 1000);
+} else {
+  // MODE TBA (jadwal belum diumumkan)
+  cdUnits.style.display = 'none';
+  cdTba.style.display = '';
+  cdDate.innerHTML = 'Tanggal Segera Diumumkan &middot; Banda Aceh';
 }
-tick();
-setInterval(tick, 1000);
 
 // ══════════ PARTIKEL BARA EMAS (hero) — ringan ══════════
 (function () {
@@ -176,29 +197,6 @@ function tryAutoStart() {
 ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(ev =>
   window.addEventListener(ev, tryAutoStart, { passive: true }));
 
-// ══════════ RSVP FORM ══════════
-const form = document.getElementById('rsvpForm');
-const note = document.getElementById('rsvpNote');
-
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const required = [form.nama, form.angkatan, form.kontak];
-  const empty = required.filter(f => !f.value.trim());
-
-  if (empty.length) {
-    empty.forEach(f => {
-      f.style.borderColor = '#c0603f';
-      setTimeout(() => { f.style.borderColor = ''; }, 2000);
-    });
-    return;
-  }
-
-  note.hidden = false;
-  const btn = form.querySelector('button[type="submit"]');
-  btn.textContent = 'Terkirim ✓';
-  form.querySelectorAll('input, select, textarea, button').forEach(f => f.disabled = true);
-});
-
 // ══════════ SCROLL PROGRESS BAR ══════════
 const progress = document.getElementById('scrollProgress');
 function updateProgress() {
@@ -224,6 +222,75 @@ updateProgress();
   window.addEventListener('load', () => setTimeout(done, hold));
   // jaring pengaman bila event load sudah lewat
   setTimeout(done, hold + 1200);
+})();
+
+// ══════════ DASHBOARD HASIL SURVEI ══════════
+// >>> Untuk memperbarui angka: cukup ubah nilai di objek SURVEY di bawah ini.
+//     (Nanti bisa diganti fetch otomatis dari Google Sheet saat sudah online.)
+(function () {
+  const section = document.getElementById('survei');
+  if (!section) return;
+
+  const SURVEY = {
+    tanggal: [
+      { label: 'Keduanya bisa',   value: 23 },
+      { label: '19–20 Desember',  value: 22 },
+      { label: '14–15 November',  value: 18 },
+    ],
+    lokasi: [
+      { label: 'Aula / Hotel',        value: 22 },
+      { label: 'Pantai',              value: 21 },
+      { label: 'Resort',              value: 16 },
+      { label: 'Kampus Teknik USK',   value: 4 },
+    ],
+    hari: [
+      { label: 'Sabtu',        value: 29 },
+      { label: 'Jumat–Minggu', value: 19 },
+      { label: 'Minggu',       value: 15 },
+    ],
+  };
+
+  // ── Bar charts ──
+  section.querySelectorAll('.chart[data-chart]').forEach((chart) => {
+    const data = SURVEY[chart.dataset.chart];
+    const max = Math.max.apply(null, data.map(d => d.value));
+    const wrap = chart.querySelector('.bars');
+    data.forEach((d, i) => {
+      const row = document.createElement('div');
+      row.className = 'bar' + (i === 0 ? ' bar--top' : '');
+      row.innerHTML =
+        '<div class="bar__head"><span class="bar__lbl">' + d.label + '</span><span class="bar__val">' + d.value + '</span></div>' +
+        '<div class="bar__track"><div class="bar__fill" data-w="' + ((d.value / max) * 100) + '"></div></div>';
+      wrap.appendChild(row);
+    });
+  });
+
+  // ── Animasi counter ──
+  function animateCount(elm) {
+    const target = parseInt(elm.dataset.count, 10);
+    if (reduceMotion) { elm.textContent = target; return; }
+    const dur = 1100, t0 = performance.now();
+    (function step(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      elm.textContent = Math.round(target * e);
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+
+  // ── Trigger saat section terlihat ──
+  let done = false;
+  new IntersectionObserver((entries, obs) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting || done) return;
+      done = true;
+      section.querySelectorAll('[data-count]').forEach(animateCount);
+      requestAnimationFrame(() => {
+        section.querySelectorAll('.bar__fill').forEach(f => { f.style.width = f.dataset.w + '%'; });
+      });
+      obs.disconnect();
+    });
+  }, { threshold: 0.2 }).observe(section);
 })();
 
 // ══════════ SMOOTH SCROLL MOMENTUM (desktop, non-touch) ══════════

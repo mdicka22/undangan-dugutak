@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Reuni Akbar Ikatan Alumni Teknik Tambang USK 2026 — Merajut Kembali, Menguatkan Silaturahmi, Membangun Masa Depan Tambang Indonesia." />
-  <title>Reuni Akbar — Ikatan Alumni Teknik Tambang USK 2026</title>
+  <meta name="description" content="Reuni Akbar Ikatan Alumni Teknik Pertambangan USK 2026 — Merajut Kembali, Menguatkan Silaturahmi, Membangun Masa Depan Tambang Indonesia." />
+  <title>Reuni Akbar — Ikatan Alumni Teknik Pertambangan USK 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -23,7 +23,7 @@
       </span>
       <span class="intro__title">Reuni Akbar</span>
       <span class="intro__line"></span>
-      <span class="intro__sub">Ikatan Alumni Teknik Tambang USK</span>
+      <span class="intro__sub">Ikatan Alumni Teknik Pertambangan USK</span>
     </div>
   </div>
 
@@ -42,10 +42,11 @@
         </span>
         <span class="brand__text">
           <strong>Ikatan Alumni</strong>
-          <span>Teknik Tambang USK</span>
+          <span>Teknik Pertambangan USK</span>
         </span>
       </a>
       <nav class="nav__links" id="navLinks">
+        <a href="#survei">Survei</a>
         <a href="#rundown">Rundown</a>
         <a href="#testimoni">Testimoni</a>
         <a href="#galeri">Galeri</a>
@@ -68,15 +69,15 @@
         <p class="hero__eye">Universitas Syiah Kuala &middot; Banda Aceh</p>
         <h1 class="hero__title">
           Reuni Akbar
-          <span class="hero__title-gold">Ikatan Alumni<br />Teknik Tambang USK</span>
+          <span class="hero__title-gold">Ikatan Alumni<br />Teknik Pertambangan USK</span>
         </h1>
         <p class="hero__lead">
           Merajut Kembali, Menguatkan Silaturahmi,<br />
-          Membangun Masa Depan Tambang Indonesia.
+          Membangun Masa Depan Pertambangan Indonesia.
         </p>
 
         <p class="cd__label">Menuju <em>Hari Spesial</em></p>
-        <div class="cd">
+        <div class="cd" id="cdUnits" style="display:none">
           <div class="cd__unit"><span class="cd__num" id="cd-d">—</span><span class="cd__lbl">Hari</span></div>
           <span class="cd__sep">:</span>
           <div class="cd__unit"><span class="cd__num" id="cd-h">—</span><span class="cd__lbl">Jam</span></div>
@@ -85,17 +86,50 @@
           <span class="cd__sep">:</span>
           <div class="cd__unit"><span class="cd__num" id="cd-s">—</span><span class="cd__lbl">Detik</span></div>
         </div>
-        <p class="cd__date">20 Desember 2026 &middot; Banda Aceh</p>
+        <div class="cd__tba" id="cdTba">TBA</div>
+        <p class="cd__date" id="cdDate">Tanggal Segera Diumumkan &middot; Banda Aceh</p>
       </div>
     </div>
     <div class="hero__scroll"><span></span></div>
+  </section>
+
+  <!-- HASIL SURVEI -->
+  <section class="sec" id="survei">
+    <div class="sec__in">
+      <div class="sec__head reveal">
+        <p class="sec__eye">01 — Hasil Survei</p>
+        <h2 class="sec__title">Suara Alumni</h2>
+        <div class="sec__rule"></div>
+        <p class="survey__lead">Rangkuman <strong>63 responden</strong> survei Reuni Akbar IKATP USK — menjadi dasar penentuan tanggal, lokasi, dan konsep acara.</p>
+      </div>
+
+      <div class="survey__top">
+        <div class="survey__hero reveal">
+          <span class="survey__big"><span data-count="63">0</span></span>
+          <span class="survey__big-lbl">Total Responden</span>
+          <div class="survey__mini">
+            <div class="mini"><span class="mini__num" data-count="49">0</span><span class="mini__lbl">Berminat</span></div>
+            <div class="mini"><span class="mini__num" data-count="9">0</span><span class="mini__lbl">Ragu-ragu</span></div>
+            <div class="mini"><span class="mini__num" data-count="5">0</span><span class="mini__lbl">Tidak</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="survey__charts">
+        <div class="chart reveal" data-chart="tanggal"><h3 class="chart__title">Tanggal Paling Memungkinkan</h3><div class="bars"></div></div>
+        <div class="chart reveal" data-chart="lokasi"><h3 class="chart__title">Lokasi yang Diinginkan</h3><div class="bars"></div></div>
+        <div class="chart reveal" data-chart="hari"><h3 class="chart__title">Hari Paling Sesuai</h3><div class="bars"></div></div>
+      </div>
+
+      <p class="survey__note">Data survei per 16 Agustus 2026 · 63 responden. Diperbarui berkala oleh panitia.</p>
+    </div>
   </section>
 
   <!-- RUNDOWN -->
   <section class="sec" id="rundown">
     <div class="sec__in">
       <div class="sec__head reveal">
-        <p class="sec__eye">01 — Rundown Acara</p>
+        <p class="sec__eye">02 — Rundown Acara</p>
         <h2 class="sec__title">Susunan Acara</h2>
         <div class="sec__rule"></div>
       </div>
@@ -117,7 +151,7 @@
   <section class="sec sec--dark" id="testimoni">
     <div class="sec__in">
       <div class="sec__head reveal">
-        <p class="sec__eye">02 — Testimoni</p>
+        <p class="sec__eye">03 — Testimoni</p>
         <h2 class="sec__title">Kata Mereka</h2>
         <div class="sec__rule"></div>
       </div>
@@ -129,7 +163,7 @@
         </article>
         <article class="te reveal">
           <div class="te__mark">&ldquo;</div>
-          <p class="te__quote">Di mana pun saya berkarier, selalu ada saudara dari Teknik Tambang USK yang siap membantu. Reuni ini wajib untuk semua angkatan.</p>
+          <p class="te__quote">Di mana pun saya berkarier, selalu ada saudara dari Teknik Pertambangan USK yang siap membantu. Reuni ini wajib untuk semua angkatan.</p>
           <div class="te__p"><div class="te__ava">DS</div><div><div class="te__name">Dewi Sartika</div><div class="te__role">Geotechnical Engineer · PT Vale Indonesia</div></div></div>
         </article>
         <article class="te reveal reveal--right">
@@ -145,7 +179,7 @@
   <section class="sec" id="galeri">
     <div class="sec__in">
       <div class="sec__head reveal">
-        <p class="sec__eye">03 — Galeri</p>
+        <p class="sec__eye">04 — Galeri</p>
         <h2 class="sec__title">Jejak yang Tertinggal</h2>
         <div class="sec__rule"></div>
       </div>
@@ -164,16 +198,21 @@
   <section class="sec sec--dark" id="kontak">
     <div class="sec__in">
       <div class="sec__head reveal">
-        <p class="sec__eye">04 — Kontak Panitia</p>
+        <p class="sec__eye">05 — Kontak Panitia</p>
         <h2 class="sec__title">Hubungi Kami</h2>
         <div class="sec__rule"></div>
       </div>
       <div class="kontak">
-        <div class="ko reveal reveal--left"><p class="ko__role">Ketua Panitia</p><p class="ko__info">+62 812-3456-7890</p><p class="ko__mail">ketua@reuni-ttusk2026.id</p></div>
-        <div class="ko reveal reveal--right"><p class="ko__role">Sekretariat</p><p class="ko__info">+62 821-2345-6789</p><p class="ko__mail">sekretariat@reuni-ttusk2026.id</p></div>
-        <div class="ko reveal reveal--left"><p class="ko__role">Acara &amp; Rundown</p><p class="ko__info">+62 822-3456-7890</p><p class="ko__mail">acara@reuni-ttusk2026.id</p></div>
-        <div class="ko reveal reveal--right"><p class="ko__role">Dana &amp; Sponsor</p><p class="ko__info">+62 813-4567-8901</p><p class="ko__mail">sponsor@reuni-ttusk2026.id</p></div>
-        <div class="ko reveal reveal--left"><p class="ko__role">Humas &amp; Publikasi</p><p class="ko__info">+62 821-9876-5432</p><p class="ko__mail">humas@reuni-ttusk2026.id</p></div>
+        <a class="ko reveal reveal--left" href="https://wa.me/628126966656" target="_blank" rel="noopener">
+          <p class="ko__role">Ketua Panitia</p>
+          <p class="ko__name">Ardi</p>
+          <p class="ko__info">+62 812-6966-656</p>
+        </a>
+        <a class="ko reveal reveal--right" href="https://wa.me/6285362000721" target="_blank" rel="noopener">
+          <p class="ko__role">Bendahara</p>
+          <p class="ko__name">Siti Fadhillah</p>
+          <p class="ko__info">+62 853-6200-0721</p>
+        </a>
       </div>
     </div>
   </section>
@@ -185,24 +224,17 @@
         <p class="sec__eye">Konfirmasi Kehadiran</p>
         <h2 class="sec__title">Kami Menantikan<br />Kehadiranmu</h2>
         <div class="sec__rule"></div>
-        <p class="rsvp__desc">Pastikan tempatmu di Reuni Akbar. Isi formulir singkat berikut — sampai jumpa di Banda Aceh, 20 Desember 2026.</p>
+        <p class="rsvp__desc">Konfirmasi kehadiran dan donasimu melalui formulir resmi kami. Data langsung tercatat oleh panitia — sampai jumpa di Banda Aceh.</p>
       </div>
-      <form class="rsvp__form reveal" id="rsvpForm" novalidate>
-        <div class="field"><label for="nama">Nama Lengkap</label><input id="nama" name="nama" type="text" placeholder="Nama kamu" required /></div>
-        <div class="field"><label for="angkatan">Angkatan</label><input id="angkatan" name="angkatan" type="text" placeholder="Contoh: 2007" required /></div>
-        <div class="field"><label for="kontak">Email / WhatsApp</label><input id="kontak" name="kontak" type="text" placeholder="email@contoh.com" required /></div>
-        <div class="field"><label for="jumlah">Jumlah Tamu</label>
-          <select id="jumlah" name="jumlah">
-            <option value="1">1 Orang (Sendiri)</option>
-            <option value="2">2 Orang (+1)</option>
-            <option value="3">3 Orang</option>
-            <option value="4">4 Orang atau lebih</option>
-          </select>
+      <div class="rsvp__cta reveal">
+        <div class="rsvp__card">
+          <span class="rsvp__icon" aria-hidden="true">📝</span>
+          <h3 class="rsvp__card-title">Formulir Kehadiran</h3>
+          <p class="rsvp__card-desc">Isi data kehadiran, jumlah tamu, dan donasi di formulir resmi.</p>
+          <a href="https://forms.gle/zA25JmfZSAJRFqcNA" target="_blank" rel="noopener" class="btn btn--gold btn--block">Isi Formulir Sekarang →</a>
+          <p class="rsvp__hint">Terbuka di Google Form · aman &amp; resmi</p>
         </div>
-        <div class="field field--full"><label for="pesan">Pesan / Kesan (Opsional)</label><textarea id="pesan" name="pesan" rows="3" placeholder="Titip salam untuk teman-teman seangkatan..."></textarea></div>
-        <button type="submit" class="btn btn--gold btn--block">Kirim Konfirmasi</button>
-        <p class="rsvp__note" id="rsvpNote" hidden>✓ Terima kasih! Kehadiranmu sudah tercatat. Sampai jumpa di reuni.</p>
-      </form>
+      </div>
     </div>
   </section>
 
@@ -216,9 +248,9 @@
             <path d="M13 26 L20 13 L27 26 Z M20 13 L20 26" fill="none" stroke="currentColor" stroke-width="1.6"/>
           </svg>
         </span>
-        <span class="brand__text"><strong>Ikatan Alumni Teknik Tambang USK</strong><span>Bersama kita kuat, bersama kita berdampak</span></span>
+        <span class="brand__text"><strong>Ikatan Alumni Teknik Pertambangan USK</strong><span>Bersama kita kuat, bersama kita berdampak</span></span>
       </div>
-      <p class="footer__copy">© 2026 Reuni Akbar Ikatan Alumni Teknik Tambang USK · Banda Aceh, Aceh, Indonesia. All Rights Reserved.</p>
+      <p class="footer__copy">© 2026 Reuni Akbar Ikatan Alumni Teknik Pertambangan USK · Banda Aceh, Aceh, Indonesia. All Rights Reserved.</p>
     </div>
   </footer>
 
