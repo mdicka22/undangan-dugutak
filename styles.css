@@ -331,6 +331,35 @@ img { display: block; max-width: 100%; }
 .te__name { font-family: var(--fh); font-weight: 700; font-size: 0.98rem; color: var(--text); }
 .te__role { font-family: var(--fm); font-size: 0.6rem; letter-spacing: 0.05em; color: var(--gold); margin-top: 0.3rem; }
 
+/* ══════════ DINDING HARAPAN (auto-scroll) ══════════ */
+.wall {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  height: 560px; overflow: hidden; position: relative;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 9%, #000 91%, transparent);
+}
+.wall__col { overflow: hidden; }
+.wall__track { display: flex; flex-direction: column; gap: 1rem; animation: wallUp 60s linear infinite; will-change: transform; }
+.wall__col--down .wall__track { animation-name: wallDown; }
+.wall:hover .wall__track { animation-play-state: paused; }
+@keyframes wallUp { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+@keyframes wallDown { from { transform: translateY(-50%); } to { transform: translateY(0); } }
+.wq { background: var(--bg); border: 1px solid var(--bdr); padding: 1.4rem 1.5rem; position: relative; }
+.wq__mark { font-family: var(--fd); font-size: 2.6rem; line-height: 0.5; color: rgba(201,168,76,0.2); }
+.wq__text { font-size: 0.9rem; color: var(--tdim); font-style: italic; line-height: 1.75; margin: 0.5rem 0 1.1rem; }
+.wq__by { display: flex; align-items: center; gap: 0.7rem; }
+.wq__ava { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--gold); background: var(--surf2); display: grid; place-items: center; font-family: var(--fh); font-weight: 700; font-size: 0.88rem; color: var(--gold); flex-shrink: 0; }
+.wq__meta { display: flex; flex-direction: column; line-height: 1.25; }
+.wq__meta b { font-family: var(--fh); font-weight: 700; font-size: 0.92rem; color: var(--text); }
+.wq__meta small { font-family: var(--fm); font-size: 0.58rem; letter-spacing: 0.08em; color: var(--gold); }
+
+/* ══════════ DONASI ══════════ */
+.donasi { text-align: center; }
+.donasi .sec__eye { color: var(--gold); }
+.donasi .sec__rule { margin-left: auto; margin-right: auto; }
+.donasi__amount { font-family: var(--fd); font-size: clamp(3.6rem, 12vw, 6.4rem); line-height: 1; color: var(--gold); margin-top: 1.2rem; text-shadow: 0 4px 36px rgba(201,168,76,0.4); }
+.donasi__note { font-family: var(--fm); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tmute); margin-top: 1.1rem; }
+
 /* ══════════ 06 GALERI ══════════ */
 .gallery { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 190px; gap: 0.7rem; }
 .gl {
@@ -471,6 +500,8 @@ img { display: block; max-width: 100%; }
 }
 @media (max-width: 640px) {
   .survey__charts { grid-template-columns: 1fr; }
+  .wall { grid-template-columns: 1fr; height: 480px; }
+  .wall__col--down { display: none; }
 }
 @media (max-width: 720px) {
   .nav__links {
@@ -520,4 +551,7 @@ img { display: block; max-width: 100%; }
   .reveal { opacity: 1 !important; transform: none !important; }
   .hero__eye, .hero__title, .hero__lead, .cd__label, .cd, .cd__date { opacity: 1 !important; transform: none !important; animation: none !important; }
   .hero__title-gold { -webkit-text-fill-color: var(--gold); color: var(--gold); animation: none; }
+  .wall { height: auto; overflow: visible; -webkit-mask-image: none; mask-image: none; }
+  .wall__track { animation: none; }
+  .wall__col--down .wall__track { flex-direction: column; }
 }

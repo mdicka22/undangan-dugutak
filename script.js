@@ -293,6 +293,105 @@ updateProgress();
   }, { threshold: 0.2 }).observe(section);
 })();
 
+// ══════════ DINDING HARAPAN ALUMNI ══════════
+// >>> Sumber kutipan (dari kolom "Harapan" survei). Nanti bisa diganti fetch dari Google Sheet.
+(function () {
+  const wall = document.getElementById('wall');
+  if (!wall) return;
+
+  const HARAPAN = [
+    { n: 'Deea Rizki Oziana', a: '2012', t: 'Semoga pada datang semuaaaaa.' },
+    { n: 'Win Akbar', a: '2014', t: 'Semoga silaturahmi tetap berlanjut dan saling mengenal sesama alumni pertambangan.' },
+    { n: 'Fadel Azhari Natama Hasibuan', a: '2019', t: 'Besar harapannya reuni akbar ini menjadi acara untuk kita lebih akrab, lebih mengenal, dan lebih memiliki rasa kepemilikan terhadap IKATP kita bersama.' },
+    { n: 'M. Tri Mahfut Saputra', a: '2018', t: 'Semoga di tahun ke-10 IKATP, ikatan ini semakin solid dan bermanfaat bagi semua lulusan teknik pertambangan, serta mempererat tali silaturahmi antar alumni.' },
+    { n: 'M. Affhan Zuhri', a: '2017', t: 'Bisa saling berkumpul dan bersilaturahmi.' },
+    { n: 'Muhammad Akbar Waris', a: '2017', t: 'Bisa banyak kenal dengan yang lain.' },
+    { n: 'Asyifaul Auwalin', a: '2017', t: 'Menjadi reuni yang menjalin silaturahmi dan keakraban yang saling bersinergi.' },
+    { n: 'Januardi', a: '2012', t: 'Reuni akbar IKATP USK bukan hanya ajang berkumpul dan bernostalgia, tetapi juga momentum untuk mempererat silaturahmi, membangun kembali komunikasi antaralumni, serta memperkuat rasa kekeluargaan.' },
+    { n: 'Riath Zamullana', a: '2018', t: 'Terjalinnya ikatan yang erat antar alumni.' },
+    { n: 'Syarif Akbar', a: '2015', t: 'Semoga segera terlaksana.' },
+    { n: 'Yusfaizi Aditia', a: '2014', t: 'Lebih kompak.' },
+    { n: 'Bintang Try Atmaja', a: '2020', t: 'Menjadi acara yang benar-benar akrab antara alumni satu dan lainnya, tanpa membeda-bedakan angkatan.' },
+    { n: 'Dicky Roza Mulia Sandy', a: '2015', t: 'Mengenang kebersamaan dan temu kangen senior–junior.' },
+    { n: 'Muhammad Aidil Tiska Aulia', a: '2017', t: 'Semoga Reuni Akbar dapat mempererat silaturahmi dan membangun networking antaralumni.' },
+    { n: 'Muhammad Taufiq', a: '2012', t: 'Terjalin silaturahmi yang erat lintas alumni, dan IKATP USK semakin jaya.' },
+    { n: 'Ali Hasymj', a: '2012', t: 'Silaturahmi.' },
+    { n: 'Taufik Ardisal', a: '2018', t: 'Harapan saya, reuni akbar ini menjadi ajang silaturahmi untuk mempererat hubungan antaralumni, berbagi pengalaman, serta membangun networking dan kolaborasi yang bermanfaat bagi alumni maupun kampus.' },
+    { n: 'Muhammad Furqanul Ikram', a: '2017', t: 'Semoga melalui reuni perdana tercipta suasana penuh kebersamaan, kegembiraan, dan semangat positif, sehingga hubungan antar alumni semakin erat.' },
+    { n: 'Hariyanti Mentari', a: '2017', t: 'Semoga reuni ini akan terus ada sampai waktu yang lama.' },
+    { n: 'Diza Putra Rizki', a: '2017', t: 'Ajang silaturahmi lintas generasi dan mempererat hubungan IKATP USK.' },
+    { n: 'Muammar', a: '2016', t: 'Terjalin keakraban dan membangun relasi yang lebih kuat antar angkatan.' },
+    { n: 'Khana Rizki Maulana', a: '2014', t: 'Menjadi ajang silaturahmi antar alumni agar tetap solid.' },
+    { n: 'Adhar Dedyansyah', a: '2014', t: 'Semoga makin jaya.' },
+    { n: 'Ilham Akbar', a: '2018', t: 'Komunikasi dan silaturahmi terus berjalan.' },
+    { n: 'Agung Wiranto', a: '2014', t: 'Semoga terlaksana.' },
+    { n: 'Muhammad Arrafi Zaidhan', a: '2018', t: 'Dapat meningkatkan ikatan antar alumni.' },
+    { n: 'Siti Fadhillah', a: '2012', t: 'Mempererat silaturahmi, sharing knowledge, dan memperkuat jejaring antaralumni.' },
+    { n: 'Fachriansyah', a: '2012', t: 'Reuni Akbar IKATP USK akan menjadi acara formal pertama sejak ikatan alumni ini berdiri. Harapan saya, reuni ini membangkitkan kembali kenangan para alumni sekaligus menjadi ajang temu ramah dan temu kangen.' },
+    { n: 'Aris Munandar', a: '2012', t: 'Bisa terselenggara dengan perencanaan yang matang.' },
+    { n: 'Aminul Ghifari', a: '2012', t: 'Silaturahmi, bertemu teman lama.' },
+    { n: 'Muhammad Dicka Andrian', a: '2012', t: 'Berjalan lancar, meriah, harmonis, dan sukses.' },
+    { n: 'Rahmi Auli', a: '2017', t: 'Semoga bisa terlaksana dengan baik.' },
+    { n: 'Reizi Hanifa Arsya', a: '2016', t: 'Bisa dihadiri banyak alumni.' },
+    { n: 'Sayed Hubbul', a: '2012', t: 'Semoga menjadi wadah untuk mempererat ikatan alumni serta menjadi tempat informasi terkait lowongan kerja, project, dan hal-hal positif lainnya.' },
+    { n: 'Fitri Amalia', a: '2019', t: 'Dapat berkumpul dengan alumni dan teman-teman yang sudah lama tidak bertemu.' },
+    { n: 'Fadiya Aqila Anhar', a: '2021', t: 'Semoga berjalan lancar dan dihadiri banyak abang–kakak alumni, agar leting atas hingga bawah dapat saling berkenalan.' },
+    { n: 'Muhammad Ihsan Tanjung', a: '2017', t: 'Untuk meningkatkan solidaritas sesama alumni.' },
+    { n: 'Sausan Azzahra', a: '2019', t: 'Semakin mempererat tali silaturahmi antara alumni dan dosen, membawa kebermanfaatan melalui sharing pengalaman dunia kerja dan berbagi ilmu.' },
+    { n: 'Jessica Anggraini', a: '2017', t: 'Lebih mengenal satu sama lain.' },
+    { n: 'Rafly Al Qausar', a: '2019', t: 'Ngumpul semua.' },
+    { n: 'Isna Rosifa', a: '2014', t: 'Bisa terlaksana dengan baik.' },
+    { n: 'Muhammad Rifaldi', a: '2012', t: 'Semoga dapat terwujud, karena sangat bagus untuk perkembangan ikatan alumni.' },
+    { n: 'M. Razzaqul', a: '2016', t: 'Semoga terbentuk pengurus yang sanggup dan mampu mengurus IKATP, agar ikatan ini terus tumbuh dan berpengaruh.' },
+    { n: 'Teuku Irwandi', a: '2020', t: 'Dengan adanya reuni akbar, semakin mempererat silaturahmi IKATP USK.' },
+    { n: 'Zaki Azhari', a: '2016', t: 'Jadi wadah silaturahmi.' },
+    { n: 'Muhammad Hanin Rizfi', a: '2021', t: 'Bismillah, bisa berjalan dengan lancar dan sesuai rencana.' },
+  ];
+
+  function initials(name) {
+    const w = name.trim().split(/\s+/);
+    return (w.length === 1 ? w[0].slice(0, 2) : w[0][0] + w[1][0]).toUpperCase();
+  }
+  function card(q) {
+    const fig = document.createElement('figure'); fig.className = 'wq';
+    const mark = document.createElement('div'); mark.className = 'wq__mark'; mark.textContent = '“';
+    const p = document.createElement('p'); p.className = 'wq__text'; p.textContent = q.t;
+    const cap = document.createElement('figcaption'); cap.className = 'wq__by';
+    const ava = document.createElement('span'); ava.className = 'wq__ava'; ava.textContent = initials(q.n);
+    const meta = document.createElement('span'); meta.className = 'wq__meta';
+    const b = document.createElement('b'); b.textContent = q.n;
+    const s = document.createElement('small'); s.textContent = 'Angkatan ' + q.a;
+    meta.append(b, s); cap.append(ava, meta); fig.append(mark, p, cap);
+    return fig;
+  }
+
+  const tracks = wall.querySelectorAll('.wall__track');
+  HARAPAN.forEach((q, i) => tracks[i % 2].appendChild(card(q)));
+  if (!reduceMotion) {
+    tracks.forEach(tr => Array.from(tr.children).forEach(ch => tr.appendChild(ch.cloneNode(true))));
+  }
+})();
+
+// ══════════ COUNTER DONASI ══════════
+(function () {
+  const el = document.getElementById('donasiNum');
+  if (!el) return;
+  const target = parseInt(el.dataset.amount, 10) || 0;
+  function run() {
+    if (reduceMotion || target === 0) { el.textContent = target.toLocaleString('id-ID'); return; }
+    const dur = 1400, t0 = performance.now();
+    (function step(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * e).toLocaleString('id-ID');
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+  new IntersectionObserver((entries, obs) => {
+    entries.forEach(e => { if (e.isIntersecting) { run(); obs.disconnect(); } });
+  }, { threshold: 0.4 }).observe(el);
+})();
+
 // ══════════ SMOOTH SCROLL MOMENTUM (desktop, non-touch) ══════════
 (function () {
   const fine = window.matchMedia('(pointer: fine)').matches;
