@@ -427,7 +427,7 @@ img { display: block; max-width: 100%; }
 }
 .rsvp__card::after { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
 .rsvp__icon { font-size: 2.4rem; display: block; margin-bottom: 0.8rem; }
-.rsvp__card-title { font-family: var(--fh); font-weight: 700; font-size: 1.55rem; color: var(--text); }
+.rsvp__card-title { font-family: var(--fh); font-weight: 700; font-size: 1.55rem; color: var(--text); margin-bottom: 1.6rem; }
 .rsvp__card-desc { color: var(--tdim); font-size: 0.92rem; margin: 0.6rem auto 1.7rem; max-width: 300px; }
 .rsvp__hint { font-family: var(--fm); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tmute); margin-top: 1rem; }
 .rsvp__form {
@@ -454,6 +454,8 @@ img { display: block; max-width: 100%; }
 .brand--footer { justify-content: center; }
 .brand--footer .brand__text span { color: var(--tdim); text-transform: none; letter-spacing: 0.04em; font-size: 0.62rem; }
 .footer__copy { font-family: var(--fm); font-size: 0.6rem; letter-spacing: 0.1em; color: var(--tmute); }
+.footer__credit { font-family: var(--fm); font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--tdim); margin-top: 0.6rem; }
+.footer__credit span { color: var(--gold); }
 
 /* ══════════ MUSIC BUTTON ══════════ */
 .music {
