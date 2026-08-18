@@ -302,6 +302,24 @@ img { display: block; max-width: 100%; }
 .rd__c h3 { font-family: var(--fh); font-weight: 700; font-size: 1.15rem; color: var(--text); }
 .rd__c p { font-size: 0.9rem; color: var(--tdim); margin-top: 0.2rem; }
 
+/* ══════════ TEASER RUNDOWN (placeholder) ══════════ */
+.teaser { text-align: center; max-width: 640px; margin: 0 auto; padding: 1rem 0; }
+.teaser__big {
+  font-family: var(--fd); font-size: clamp(3.2rem, 10vw, 6rem); line-height: 0.92;
+  letter-spacing: 0.02em; color: var(--gold); text-shadow: 0 4px 34px rgba(201,168,76,0.35);
+  animation: tbaPulse 2.8s ease-in-out infinite;
+}
+.teaser__lead { color: var(--tdim); font-size: 1.02rem; margin-top: 1.4rem; }
+.teaser__pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.7rem; margin-top: 1.8rem; }
+.teaser__pills span {
+  font-family: var(--fm); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(201,168,76,0.4); border-radius: 100px; padding: 0.5rem 1.1rem;
+}
+.teaser__note {
+  font-family: var(--fm); font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--tmute); margin-top: 2rem;
+}
+
 /* ══════════ 04 ALUMNI ══════════ */
 .alumni { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
 .al {
@@ -349,6 +367,7 @@ img { display: block; max-width: 100%; }
 .wq__text { font-size: 0.9rem; color: var(--tdim); font-style: italic; line-height: 1.75; margin: 0.5rem 0 1.1rem; }
 .wq__by { display: flex; align-items: center; gap: 0.7rem; }
 .wq__ava { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--gold); background: var(--surf2); display: grid; place-items: center; font-family: var(--fh); font-weight: 700; font-size: 0.88rem; color: var(--gold); flex-shrink: 0; }
+.wq__ava--img { object-fit: cover; padding: 0; }
 .wq__meta { display: flex; flex-direction: column; line-height: 1.25; }
 .wq__meta b { font-family: var(--fh); font-weight: 700; font-size: 0.92rem; color: var(--text); }
 .wq__meta small { font-family: var(--fm); font-size: 0.58rem; letter-spacing: 0.08em; color: var(--gold); }
@@ -359,6 +378,15 @@ img { display: block; max-width: 100%; }
 .donasi .sec__rule { margin-left: auto; margin-right: auto; }
 .donasi__amount { font-family: var(--fd); font-size: clamp(3.6rem, 12vw, 6.4rem); line-height: 1; color: var(--gold); margin-top: 1.2rem; text-shadow: 0 4px 36px rgba(201,168,76,0.4); }
 .donasi__note { font-family: var(--fm); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tmute); margin-top: 1.1rem; }
+.rekening { margin: 2rem auto 0; max-width: 380px; background: var(--surf); border: 1px solid var(--bdr); border-radius: 14px; padding: 1.5rem 1.6rem; }
+.rekening__label { font-family: var(--fm); font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--tdim); margin-bottom: 0.9rem; }
+.rekening__row { display: flex; align-items: center; justify-content: center; gap: 0.8rem; }
+.rekening__bank { font-family: var(--fh); font-weight: 700; font-size: 1.05rem; color: var(--gold-2); letter-spacing: 0.04em; }
+.rekening__no { font-family: var(--fm); font-size: 1.25rem; letter-spacing: 0.06em; color: var(--text); }
+.rekening__copy { font-family: var(--fm); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); background: transparent; border: 1px solid rgba(201,168,76,0.5); border-radius: 100px; padding: 0.35rem 0.8rem; cursor: pointer; transition: background 0.25s, color 0.25s; }
+.rekening__copy:hover { background: var(--gold); color: #14110a; }
+.rekening__copy.copied { background: var(--gold); color: #14110a; border-color: var(--gold); }
+.rekening__name { font-family: var(--fb); font-size: 0.85rem; color: var(--tdim); margin-top: 0.9rem; }
 
 /* ══════════ 06 GALERI ══════════ */
 .gallery { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 190px; gap: 0.7rem; }

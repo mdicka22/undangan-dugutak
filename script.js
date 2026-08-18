@@ -326,11 +326,11 @@ updateProgress();
     { n: 'Ilham Akbar', a: '2018', t: 'Komunikasi dan silaturahmi terus berjalan.' },
     { n: 'Agung Wiranto', a: '2014', t: 'Semoga terlaksana.' },
     { n: 'Muhammad Arrafi Zaidhan', a: '2018', t: 'Dapat meningkatkan ikatan antar alumni.' },
-    { n: 'Siti Fadhillah', a: '2012', t: 'Mempererat silaturahmi, sharing knowledge, dan memperkuat jejaring antaralumni.' },
+    { n: 'Siti Fadhillah', a: '2012', t: 'Mempererat silaturahmi, sharing knowledge, dan memperkuat jejaring antaralumni.', f: 'siti.jpeg' },
     { n: 'Fachriansyah', a: '2012', t: 'Reuni Akbar IKATP USK akan menjadi acara formal pertama sejak ikatan alumni ini berdiri. Harapan saya, reuni ini membangkitkan kembali kenangan para alumni sekaligus menjadi ajang temu ramah dan temu kangen.' },
     { n: 'Aris Munandar', a: '2012', t: 'Bisa terselenggara dengan perencanaan yang matang.' },
     { n: 'Aminul Ghifari', a: '2012', t: 'Silaturahmi, bertemu teman lama.' },
-    { n: 'Muhammad Dicka Andrian', a: '2012', t: 'Berjalan lancar, meriah, harmonis, dan sukses.' },
+    { n: 'Muhammad Dicka Andrian', a: '2012', t: 'Berjalan lancar, meriah, harmonis, dan sukses.', f: 'dicka.jpeg' },
     { n: 'Rahmi Auli', a: '2017', t: 'Semoga bisa terlaksana dengan baik.' },
     { n: 'Reizi Hanifa Arsya', a: '2016', t: 'Bisa dihadiri banyak alumni.' },
     { n: 'Sayed Hubbul', a: '2012', t: 'Semoga menjadi wadah untuk mempererat ikatan alumni serta menjadi tempat informasi terkait lowongan kerja, project, dan hal-hal positif lainnya.' },
@@ -352,23 +352,36 @@ updateProgress();
     const w = name.trim().split(/\s+/);
     return (w.length === 1 ? w[0].slice(0, 2) : w[0][0] + w[1][0]).toUpperCase();
   }
+  function avatar(q) {
+    // Kalau ada nama file foto (kolom "f") → tampilkan foto dari folder /foto.
+    // Kalau file tidak ada / gagal dimuat → otomatis kembali ke avatar inisial.
+    if (q.f) {
+      const img = document.createElement('img');
+      img.className = 'wq__ava wq__ava--img';
+      img.src = 'foto/' + q.f;
+      img.alt = q.n; img.loading = 'lazy';
+      img.setAttribute('onerror', 'this.outerHTML=\'<span class="wq__ava">' + initials(q.n) + '</span>\'');
+      return img;
+    }
+    const sp = document.createElement('span'); sp.className = 'wq__ava'; sp.textContent = initials(q.n);
+    return sp;
+  }
   function card(q) {
     const fig = document.createElement('figure'); fig.className = 'wq';
     const mark = document.createElement('div'); mark.className = 'wq__mark'; mark.textContent = '“';
     const p = document.createElement('p'); p.className = 'wq__text'; p.textContent = q.t;
     const cap = document.createElement('figcaption'); cap.className = 'wq__by';
-    const ava = document.createElement('span'); ava.className = 'wq__ava'; ava.textContent = initials(q.n);
     const meta = document.createElement('span'); meta.className = 'wq__meta';
     const b = document.createElement('b'); b.textContent = q.n;
     const s = document.createElement('small'); s.textContent = 'Angkatan ' + q.a;
-    meta.append(b, s); cap.append(ava, meta); fig.append(mark, p, cap);
+    meta.append(b, s); cap.append(avatar(q), meta); fig.append(mark, p, cap);
     return fig;
   }
 
   const tracks = wall.querySelectorAll('.wall__track');
-  HARAPAN.forEach((q, i) => tracks[i % 2].appendChild(card(q)));
-  if (!reduceMotion) {
-    tracks.forEach(tr => Array.from(tr.children).forEach(ch => tr.appendChild(ch.cloneNode(true))));
+  const copies = reduceMotion ? 1 : 2; // 2 set untuk loop mulus
+  for (let c = 0; c < copies; c++) {
+    HARAPAN.forEach((q, i) => tracks[i % 2].appendChild(card(q)));
   }
 })();
 
@@ -390,6 +403,24 @@ updateProgress();
   new IntersectionObserver((entries, obs) => {
     entries.forEach(e => { if (e.isIntersecting) { run(); obs.disconnect(); } });
   }, { threshold: 0.4 }).observe(el);
+})();
+
+// ══════════ SALIN NOMOR REKENING ══════════
+(function () {
+  const btn = document.getElementById('rekCopy');
+  const no = document.getElementById('rekNo');
+  if (!btn || !no) return;
+  btn.addEventListener('click', () => {
+    const text = no.textContent.trim();
+    const done = () => { btn.textContent = 'Tersalin ✓'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Salin'; btn.classList.remove('copied'); }, 1800); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else { fallback(); }
+    function fallback() {
+      const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+      ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done();
+    }
+  });
 })();
 
 // ══════════ SMOOTH SCROLL MOMENTUM (desktop, non-touch) ══════════
