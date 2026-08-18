@@ -405,6 +405,32 @@ updateProgress();
   }, { threshold: 0.4 }).observe(el);
 })();
 
+// ══════════ ONLINE NOW (Supabase Realtime Presence) ══════════
+(function () {
+  const badge = document.getElementById('onlineBadge');
+  const countEl = document.getElementById('onlineCount');
+  if (!badge || !countEl || !window.supabase || !window.supabase.createClient) return;
+
+  const SUPABASE_URL = 'https://rroscbhgzvdiwiujyxhv.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJyb3NjYmhnenZkaXdpdWp5eGh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwMTM2NTcsImV4cCI6MjEwMjU4OTY1N30.-Wq9l0Y9C4kftE6zHnVsJIqfbMgzkEJ566zh7zEjQQY';
+
+  try {
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const key = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'u' + Math.random().toString(36).slice(2);
+    const channel = client.channel('reuni-online', { config: { presence: { key } } });
+
+    function update() {
+      const state = channel.presenceState();
+      countEl.textContent = Object.keys(state).length;
+      badge.hidden = false;
+    }
+    channel.on('presence', { event: 'sync' }, update);
+    channel.subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') { await channel.track({ at: Date.now() }); }
+    });
+  } catch (e) { /* diam bila gagal konek */ }
+})();
+
 // ══════════ SALIN NOMOR REKENING ══════════
 (function () {
   const btn = document.getElementById('rekCopy');

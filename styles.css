@@ -477,6 +477,19 @@ img { display: block; max-width: 100%; }
 .music.playing .music__eq i:nth-child(4) { animation-delay: 0.15s; }
 @keyframes eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
 
+/* ══════════ ONLINE NOW BADGE ══════════ */
+.online {
+  position: fixed; left: 1.2rem; bottom: 1.2rem; z-index: 90;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.55rem 0.95rem; border-radius: 100px;
+  background: rgba(15, 15, 14, 0.85); border: 1px solid var(--bdr); backdrop-filter: blur(10px);
+  font-family: var(--fm); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tdim);
+  box-shadow: 0 12px 30px -12px rgba(0,0,0,0.7);
+}
+.online #onlineCount { color: var(--gold-2); font-weight: 500; }
+.online__dot { width: 8px; height: 8px; border-radius: 50%; background: #46d17f; box-shadow: 0 0 0 0 rgba(70,209,127,0.6); animation: onlinePulse 2s infinite; }
+@keyframes onlinePulse { 0% { box-shadow: 0 0 0 0 rgba(70,209,127,0.5); } 70% { box-shadow: 0 0 0 8px rgba(70,209,127,0); } 100% { box-shadow: 0 0 0 0 rgba(70,209,127,0); } }
+
 /* ══════════ REVEAL ══════════ */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(.2,.8,.2,1), transform 0.8s cubic-bezier(.2,.8,.2,1); }
 .reveal.visible { opacity: 1; transform: translateY(0); }
