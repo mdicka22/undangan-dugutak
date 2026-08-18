@@ -396,6 +396,7 @@ img { display: block; max-width: 100%; }
   transition: transform 0.5s;
 }
 .gl--lg { grid-column: span 2; grid-row: span 2; }
+.gl--contain { background-size: contain; background-repeat: no-repeat; background-color: #0b0b0a; }
 .gl--topo { background-color: var(--surf2); background-image:
   repeating-linear-gradient(0deg, rgba(201,168,76,0.06) 0 1px, transparent 1px 22px),
   repeating-linear-gradient(90deg, rgba(201,168,76,0.06) 0 1px, transparent 1px 22px),
