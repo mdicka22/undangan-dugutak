@@ -427,6 +427,98 @@ updateProgress();
   }
 })();
 
+// ══════════ LIVE UPDATE dari Google Sheet (via Apps Script) ══════════
+// Statistik & harapan tersambung ke Apps Script → update otomatis tiap ada responden baru.
+// Kalau koneksi gagal (mis. offline), website tetap pakai data cadangan yang sudah tertanam.
+(function () {
+  const LIVE_DATA_URL = 'https://script.google.com/macros/s/AKfycbzVUgrS89UZV0wChMlR2Hh2iUnf6R7dqsAMUrsKGXDMSbDCh7fCGgRsv5vqNlNnAShl/exec';
+  if (!LIVE_DATA_URL) return;
+
+  const PHOTO = { 'Muhammad Dicka Andrian': 'dicka.jpeg', 'Siti Fadhillah': 'siti.jpeg' };
+  let wallDone = false, lastSig = '';
+
+  function initials(name) {
+    const w = String(name).trim().split(/\s+/);
+    return (w.length === 1 ? w[0].slice(0, 2) : w[0][0] + w[1][0]).toUpperCase();
+  }
+  function avatar(q) {
+    const f = PHOTO[q.n];
+    if (f) {
+      const img = document.createElement('img');
+      img.className = 'wq__ava wq__ava--img'; img.src = 'foto/' + f; img.alt = q.n; img.loading = 'lazy';
+      img.setAttribute('onerror', 'this.outerHTML=\'<span class="wq__ava">' + initials(q.n) + '</span>\'');
+      return img;
+    }
+    const sp = document.createElement('span'); sp.className = 'wq__ava'; sp.textContent = initials(q.n); return sp;
+  }
+  function card(q) {
+    const fig = document.createElement('figure'); fig.className = 'wq';
+    const mark = document.createElement('div'); mark.className = 'wq__mark'; mark.textContent = '“';
+    const p = document.createElement('p'); p.className = 'wq__text'; p.textContent = q.t;
+    const cap = document.createElement('figcaption'); cap.className = 'wq__by';
+    const meta = document.createElement('span'); meta.className = 'wq__meta';
+    const b = document.createElement('b'); b.textContent = q.n;
+    const s = document.createElement('small'); s.textContent = 'Angkatan ' + q.a;
+    meta.append(b, s); cap.append(avatar(q), meta); fig.append(mark, p, cap);
+    return fig;
+  }
+  function buildWall(harapan) {
+    const tracks = document.querySelectorAll('.wall__track');
+    if (tracks.length < 2) return;
+    tracks.forEach(t => (t.innerHTML = ''));
+    const copies = reduceMotion ? 1 : 2;
+    for (let c = 0; c < copies; c++) harapan.forEach((q, i) => tracks[i % 2].appendChild(card(q)));
+  }
+  function renderBars(chart, data) {
+    const max = Math.max.apply(null, data.map(d => d.value)) || 1;
+    const wrap = chart.querySelector('.bars'); if (!wrap) return;
+    wrap.innerHTML = '';
+    data.forEach((d, i) => {
+      const row = document.createElement('div'); row.className = 'bar' + (i === 0 ? ' bar--top' : '');
+      row.innerHTML = '<div class="bar__head"><span class="bar__lbl">' + d.label + '</span><span class="bar__val">' + d.value + '</span></div><div class="bar__track"><div class="bar__fill"></div></div>';
+      wrap.appendChild(row);
+      const fill = row.querySelector('.bar__fill');
+      requestAnimationFrame(() => { fill.style.width = (d.value / max * 100) + '%'; });
+    });
+  }
+  function setCounter(el, val) {
+    if (val == null) return;
+    el.setAttribute('data-count', val);
+    if (el.textContent !== '0') el.textContent = val; // sudah tampil → perbarui langsung
+  }
+  function apply(d) {
+    const sig = JSON.stringify([d.total, d.ringkas, d.tanggal, d.lokasi, d.hari, (d.harapan || []).length]);
+    if (sig === lastSig) return; // tak ada perubahan → jangan render ulang
+    lastSig = sig;
+
+    const big = document.querySelector('.survey__big [data-count]');
+    if (big) setCounter(big, d.total);
+    const minis = document.querySelectorAll('.mini__num');
+    if (minis.length === 3 && d.ringkas) {
+      setCounter(minis[0], d.ringkas.berminat);
+      setCounter(minis[1], d.ringkas.ragu);
+      setCounter(minis[2], d.ringkas.tidak);
+    }
+    const leadStrong = document.querySelector('.survey__lead strong');
+    if (leadStrong && d.total != null) leadStrong.textContent = d.total + ' responden';
+    const note = document.querySelector('.survey__note');
+    if (note && d.total != null) note.textContent = 'Data terkini · ' + d.total + ' responden · diperbarui otomatis';
+    document.querySelectorAll('.chart[data-chart]').forEach(ch => {
+      const key = ch.dataset.chart;
+      if (Array.isArray(d[key]) && d[key].length) renderBars(ch, d[key]);
+    });
+    if (!wallDone && Array.isArray(d.harapan) && d.harapan.length) { buildWall(d.harapan); wallDone = true; }
+  }
+  function fetchLive(retries) {
+    fetch(LIVE_DATA_URL)
+      .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then(d => apply(d))
+      .catch(() => { if (retries > 0) setTimeout(() => fetchLive(retries - 1), 3000); });
+  }
+  fetchLive(4);                            // atasi cold-start / propagasi Apps Script saat load
+  setInterval(() => fetchLive(1), 180000); // refresh tiap 3 menit
+})();
+
 // ══════════ COUNTER DONASI ══════════
 (function () {
   const el = document.getElementById('donasiNum');
