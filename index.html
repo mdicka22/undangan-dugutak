@@ -116,10 +116,16 @@
         </div>
       </div>
 
-      <div class="survey__charts">
-        <div class="chart reveal" data-chart="tanggal"><h3 class="chart__title">Tanggal Paling Memungkinkan</h3><div class="bars"></div></div>
-        <div class="chart reveal" data-chart="lokasi"><h3 class="chart__title">Lokasi yang Diinginkan</h3><div class="bars"></div></div>
-        <div class="chart reveal" data-chart="hari"><h3 class="chart__title">Hari Paling Sesuai</h3><div class="bars"></div></div>
+      <div class="survey__angkatan reveal">
+        <div class="agk__head">
+          <h3 class="chart__title">Rencana Kehadiran per Angkatan <span>· dari survei</span></h3>
+          <div class="agk__legend">
+            <span><i class="agk__dot agk__dot--ikut"></i>Ikut</span>
+            <span><i class="agk__dot agk__dot--ragu"></i>Ragu-ragu</span>
+            <span><i class="agk__dot agk__dot--tidak"></i>Tidak</span>
+          </div>
+        </div>
+        <div class="agk" id="agkChart"></div>
       </div>
 
       <p class="survey__note">Data survei per 19 Agustus 2026 · 106 responden. Diperbarui berkala oleh panitia.</p>

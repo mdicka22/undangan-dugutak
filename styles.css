@@ -279,6 +279,27 @@ img { display: block; max-width: 100%; }
 .bar--top .bar__val { color: var(--gold-2); }
 .survey__note { text-align: center; margin-top: 2rem; font-family: var(--fm); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tmute); }
 
+/* chart kehadiran per angkatan (stacked) */
+.survey__angkatan { background: var(--surf); border: 1px solid var(--bdr); padding: 1.8rem clamp(1.2rem, 3vw, 2rem); }
+.agk__head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1.5rem; }
+.agk__head .chart__title { margin-bottom: 0; }
+.chart__title span { color: var(--tmute); font-weight: 400; font-size: 0.78em; }
+.agk__legend { display: flex; gap: 1.1rem; font-family: var(--fm); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tdim); }
+.agk__legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.agk__dot { width: 10px; height: 10px; border-radius: 3px; }
+.agk__dot--ikut { background: var(--gold); }
+.agk__dot--ragu { background: #8f7a45; }
+.agk__dot--tidak { background: #5b544a; }
+.agk { display: grid; gap: 0.7rem; }
+.agk__row { display: grid; grid-template-columns: 46px 1fr 30px; align-items: center; gap: 0.9rem; }
+.agk__year { font-family: var(--fm); font-size: 0.82rem; color: var(--gold); }
+.agk__bar { display: flex; height: 16px; background: var(--bg); border: 1px solid var(--bdr); border-radius: 100px; overflow: hidden; }
+.agk__seg { width: 0; height: 100%; transition: width 1s cubic-bezier(.2,.8,.2,1); }
+.agk__seg--ikut { background: linear-gradient(90deg, var(--gold-d), var(--gold)); }
+.agk__seg--ragu { background: #8f7a45; }
+.agk__seg--tidak { background: #5b544a; }
+.agk__total { font-family: var(--fd); font-size: 1.15rem; color: var(--text); text-align: right; }
+
 /* ══════════ 02 SEJARAH ══════════ */
 .sejarah { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 5vw, 3.6rem); align-items: start; }
 .sejarah__img { position: sticky; top: 6rem; }

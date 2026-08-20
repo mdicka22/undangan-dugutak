@@ -21,6 +21,31 @@ navLinks.querySelectorAll('a').forEach(link => {
 // ══════════ MOTION PREFERENCE ══════════
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// ── Chart kehadiran per angkatan (dipakai data cadangan & live) ──
+function renderAngkatan(container, data) {
+  if (!container || !Array.isArray(data)) return;
+  var maxTotal = Math.max.apply(null, data.map(function (d) { return d.ikut + d.ragu + d.tidak; })) || 1;
+  container.innerHTML = '';
+  data.forEach(function (d) {
+    var total = d.ikut + d.ragu + d.tidak;
+    var row = document.createElement('div'); row.className = 'agk__row';
+    row.innerHTML =
+      '<span class="agk__year">' + d.y + '</span>' +
+      '<div class="agk__bar">' +
+        '<div class="agk__seg agk__seg--ikut" data-w="' + (d.ikut / maxTotal * 100) + '" title="Ikut: ' + d.ikut + '"></div>' +
+        '<div class="agk__seg agk__seg--ragu" data-w="' + (d.ragu / maxTotal * 100) + '" title="Ragu-ragu: ' + d.ragu + '"></div>' +
+        '<div class="agk__seg agk__seg--tidak" data-w="' + (d.tidak / maxTotal * 100) + '" title="Tidak: ' + d.tidak + '"></div>' +
+      '</div>' +
+      '<span class="agk__total">' + total + '</span>';
+    container.appendChild(row);
+  });
+}
+function growAngkatan(container) {
+  if (!container) return;
+  var set = function () { container.querySelectorAll('.agk__seg').forEach(function (s) { s.style.width = s.dataset.w + '%'; }); };
+  if (reduceMotion) set(); else requestAnimationFrame(set);
+}
+
 // ══════════ COUNTDOWN (config-driven) ══════════
 // >>> CARA MENGAKTIFKAN HITUNG MUNDUR SAAT JADWAL SUDAH PASTI:
 //     Cukup isi tanggal & jam acara di baris EVENT_DATE ini (format ISO, zona Aceh +07:00),
@@ -231,39 +256,21 @@ updateProgress();
   const section = document.getElementById('survei');
   if (!section) return;
 
-  const SURVEY = {
-    tanggal: [
-      { label: '19–20 Desember', value: 39 },
-      { label: 'Keduanya bisa',  value: 38 },
-      { label: '14–15 November', value: 29 },
-    ],
-    lokasi: [
-      { label: 'Pantai',            value: 35 },
-      { label: 'Aula / Hotel',      value: 32 },
-      { label: 'Resort',            value: 20 },
-      { label: 'Kampus Teknik USK', value: 15 },
-    ],
-    hari: [
-      { label: 'Sabtu',        value: 41 },
-      { label: 'Jumat–Minggu', value: 36 },
-      { label: 'Minggu',       value: 29 },
-    ],
-  };
-
-  // ── Bar charts ──
-  section.querySelectorAll('.chart[data-chart]').forEach((chart) => {
-    const data = SURVEY[chart.dataset.chart];
-    const max = Math.max.apply(null, data.map(d => d.value));
-    const wrap = chart.querySelector('.bars');
-    data.forEach((d, i) => {
-      const row = document.createElement('div');
-      row.className = 'bar' + (i === 0 ? ' bar--top' : '');
-      row.innerHTML =
-        '<div class="bar__head"><span class="bar__lbl">' + d.label + '</span><span class="bar__val">' + d.value + '</span></div>' +
-        '<div class="bar__track"><div class="bar__fill" data-w="' + ((d.value / max) * 100) + '"></div></div>';
-      wrap.appendChild(row);
-    });
-  });
+  // Data cadangan per angkatan (dipakai bila koneksi live gagal). Ikut = Sangat+Berminat.
+  const FALLBACK_ANGKATAN = [
+    { y: '2012', ikut: 15, ragu: 4, tidak: 3 },
+    { y: '2013', ikut: 5,  ragu: 1, tidak: 0 },
+    { y: '2014', ikut: 8,  ragu: 2, tidak: 1 },
+    { y: '2015', ikut: 8,  ragu: 0, tidak: 0 },
+    { y: '2016', ikut: 6,  ragu: 1, tidak: 0 },
+    { y: '2017', ikut: 11, ragu: 3, tidak: 1 },
+    { y: '2018', ikut: 11, ragu: 1, tidak: 0 },
+    { y: '2019', ikut: 6,  ragu: 1, tidak: 0 },
+    { y: '2020', ikut: 8,  ragu: 1, tidak: 0 },
+    { y: '2021', ikut: 5,  ragu: 2, tidak: 2 },
+  ];
+  const agkChart = document.getElementById('agkChart');
+  renderAngkatan(agkChart, FALLBACK_ANGKATAN);
 
   // ── Animasi counter ──
   function animateCount(elm) {
@@ -285,9 +292,7 @@ updateProgress();
       if (!e.isIntersecting || done) return;
       done = true;
       section.querySelectorAll('[data-count]').forEach(animateCount);
-      requestAnimationFrame(() => {
-        section.querySelectorAll('.bar__fill').forEach(f => { f.style.width = f.dataset.w + '%'; });
-      });
+      growAngkatan(agkChart);
       obs.disconnect();
     });
   }, { threshold: 0.2 }).observe(section);
@@ -487,7 +492,7 @@ updateProgress();
     if (el.textContent !== '0') el.textContent = val; // sudah tampil → perbarui langsung
   }
   function apply(d) {
-    const sig = JSON.stringify([d.total, d.ringkas, d.tanggal, d.lokasi, d.hari, (d.harapan || []).length]);
+    const sig = JSON.stringify([d.total, d.ringkas, d.angkatan, (d.harapan || []).length]);
     if (sig === lastSig) return; // tak ada perubahan → jangan render ulang
     lastSig = sig;
 
@@ -503,10 +508,8 @@ updateProgress();
     if (leadStrong && d.total != null) leadStrong.textContent = d.total + ' responden';
     const note = document.querySelector('.survey__note');
     if (note && d.total != null) note.textContent = 'Data terkini · ' + d.total + ' responden · diperbarui otomatis';
-    document.querySelectorAll('.chart[data-chart]').forEach(ch => {
-      const key = ch.dataset.chart;
-      if (Array.isArray(d[key]) && d[key].length) renderBars(ch, d[key]);
-    });
+    const agk = document.getElementById('agkChart');
+    if (agk && Array.isArray(d.angkatan) && d.angkatan.length) { renderAngkatan(agk, d.angkatan); growAngkatan(agk); }
     if (!wallDone && Array.isArray(d.harapan) && d.harapan.length) { buildWall(d.harapan); wallDone = true; }
   }
   function fetchLive(retries) {
