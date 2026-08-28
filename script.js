@@ -33,7 +33,7 @@ function renderAngkatan(container, data) {
     row.innerHTML =
       '<span class="agk__year">' + d.y + '</span>' +
       '<div class="agk__bar">' +
-        '<div class="agk__seg agk__seg--ikut" data-w="' + (count / maxVal * 100) + '" title="Pendaftar: ' + count + '"></div>' +
+        '<div class="agk__seg agk__seg--ikut" data-w="' + (count / maxVal * 100) + '" title="Hadir: ' + count + '"></div>' +
       '</div>' +
       '<span class="agk__total">' + count + '</span>';
     container.appendChild(row);
@@ -537,11 +537,11 @@ function animateDonationAmount(el, target) {
 
     // Perbarui teks lead
     const leadStrong = document.querySelector('#pendaftaran .survey__lead strong');
-    if (leadStrong && d.total != null) leadStrong.textContent = d.total + ' pendaftar';
+    if (leadStrong && d.total != null) leadStrong.textContent = d.total + ' peserta';
 
     // Perbarui catatan bawah
     const note = document.querySelector('.survey__note');
-    if (note && d.total != null) note.textContent = 'Data terkini · ' + d.total + ' pendaftar · diperbarui otomatis';
+    if (note && d.total != null) note.textContent = 'Data terkini · ' + d.total + ' peserta · diperbarui otomatis';
 
     // Perbarui chart per angkatan
     const agk = document.getElementById('agkChart');
