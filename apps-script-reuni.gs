@@ -36,16 +36,23 @@ function doGet() {
   var values = sheet.getDataRange().getValues();
   if (values.length < 2) return emptyResponse();
 
-  var headers = values[0].map(function (h) { return String(h || '').toLowerCase().trim(); });
+  var headers = values[0].map(function (h) { return normalizeHeader(h); });
   var rows    = values.slice(1).filter(function (r) { return r.join('') !== ''; });
   var total   = rows.length;
 
   // ── Deteksi kolom secara dinamis berdasarkan nama header ──────────────
   // Tambahkan keyword baru di sini bila nama kolom di form berbeda
+  function normalizeHeader(value) {
+    return String(value || '')
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   function findCol(keywords) {
     for (var i = 0; i < headers.length; i++) {
       for (var k = 0; k < keywords.length; k++) {
-        if (headers[i].indexOf(keywords[k]) !== -1) return i;
+        if (headers[i].indexOf(normalizeHeader(keywords[k])) !== -1) return i;
       }
     }
     return -1;
@@ -54,7 +61,15 @@ function doGet() {
   var colNama     = findCol(['nama']);
   var colAngkatan = findCol(['angkatan', 'leting', 'tahun masuk', 'tahun angkatan']);
   var colHarapan  = findCol(['harapan', 'pesan', 'komentar', 'message']);
-  var colDonasi   = findCol(['Jumlah yang ditransfer']);
+  var colDonasi   = findCol([
+    'jumlah yang ditransfer',
+    'jumlah yang di transfer',
+    'jumlah transfer',
+    'nominal transfer',
+    'nominal yang ditransfer',
+    'donasi',
+    'jumlah donasi'
+  ]);
 
   // ── Pendaftar per angkatan ─────────────────────────────────────────────
   var byYear = {};
@@ -71,13 +86,26 @@ function doGet() {
     .sort()
     .map(function (k) { return { y: k, count: byYear[k] }; });
 
+  function parseNominalTransfer(value) {
+    if (typeof value === 'number') return value;
+
+    var raw = String(value || '').trim();
+    if (!raw) return 0;
+
+    // Terima format umum: Rp 100.000, 100000, atau 100.000,00.
+    var clean = raw.replace(/[^0-9,.-]/g, '');
+    if (clean.indexOf(',') !== -1) clean = clean.split(',')[0];
+    clean = clean.replace(/[^0-9]/g, '');
+
+    var num = parseInt(clean, 10);
+    return isNaN(num) ? 0 : num;
+  }
+
   // ── Total donasi / nominal transfer ───────────────────────────────────
   var totalDonasi = 0;
   if (colDonasi >= 0) {
     rows.forEach(function (r) {
-      // bersihkan simbol Rp, titik, spasi → ambil angka murni
-      var raw = String(r[colDonasi] || '').replace(/[^0-9]/g, '');
-      var num = parseInt(raw, 10);
+      var num = parseNominalTransfer(r[colDonasi]);
       if (!isNaN(num) && num > 0) totalDonasi += num;
     });
   }
@@ -114,6 +142,6 @@ function doGet() {
 
 function emptyResponse() {
   return ContentService.createTextOutput(
-    JSON.stringify({ total: 0, perAngkatan: [], harapan: [], updated: new Date().toISOString() })
+    JSON.stringify({ total: 0, perAngkatan: [], harapan: [], totalDonasi: 0, updated: new Date().toISOString() })
   ).setMimeType(ContentService.MimeType.JSON);
 }

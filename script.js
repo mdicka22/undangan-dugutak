@@ -485,7 +485,7 @@ updateProgress();
 
   function apply(d) {
     // d = { total, perAngkatan: [{y, count}], harapan: [{n,a,t}], updated }
-    const sig = JSON.stringify([d.total, d.perAngkatan, (d.harapan || []).length]);
+    const sig = JSON.stringify([d.total, d.perAngkatan, (d.harapan || []).length, d.totalDonasi]);
     if (sig === lastSig) return; // tak ada perubahan → jangan render ulang
     lastSig = sig;
 
