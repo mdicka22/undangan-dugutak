@@ -54,7 +54,7 @@ function doGet() {
   var colNama     = findCol(['nama']);
   var colAngkatan = findCol(['angkatan', 'leting', 'tahun masuk', 'tahun angkatan']);
   var colHarapan  = findCol(['harapan', 'pesan', 'komentar', 'message']);
-  var colDonasi   = findCol(['donasi', 'nominal', 'transfer', 'jumlah', 'bayar', 'pembayaran']);
+  var colDonasi   = findCol(['Jumlah yang ditransfer']);
 
   // ── Pendaftar per angkatan ─────────────────────────────────────────────
   var byYear = {};
