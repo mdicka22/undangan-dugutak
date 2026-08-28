@@ -508,6 +508,17 @@ updateProgress();
       growAngkatan(agk);
     }
 
+    // Perbarui angka donasi dari data live
+    if (d.totalDonasi != null) {
+      const donasiEl = document.getElementById('donasiNum');
+      if (donasiEl) {
+        donasiEl.setAttribute('data-amount', d.totalDonasi);
+        if (d.totalDonasi > 0) {
+          donasiEl.textContent = d.totalDonasi.toLocaleString('id-ID');
+        }
+      }
+    }
+
     // Perbarui dinding harapan (hanya jika form baru punya kolom harapan & ada isinya)
     if (!wallDone && Array.isArray(d.harapan) && d.harapan.length) {
       buildWall(d.harapan);

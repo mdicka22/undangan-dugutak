@@ -54,6 +54,7 @@ function doGet() {
   var colNama     = findCol(['nama']);
   var colAngkatan = findCol(['angkatan', 'leting', 'tahun masuk', 'tahun angkatan']);
   var colHarapan  = findCol(['harapan', 'pesan', 'komentar', 'message']);
+  var colDonasi   = findCol(['donasi', 'nominal', 'transfer', 'jumlah', 'bayar', 'pembayaran']);
 
   // ── Pendaftar per angkatan ─────────────────────────────────────────────
   var byYear = {};
@@ -69,6 +70,17 @@ function doGet() {
   var perAngkatan = Object.keys(byYear)
     .sort()
     .map(function (k) { return { y: k, count: byYear[k] }; });
+
+  // ── Total donasi / nominal transfer ───────────────────────────────────
+  var totalDonasi = 0;
+  if (colDonasi >= 0) {
+    rows.forEach(function (r) {
+      // bersihkan simbol Rp, titik, spasi → ambil angka murni
+      var raw = String(r[colDonasi] || '').replace(/[^0-9]/g, '');
+      var num = parseInt(raw, 10);
+      if (!isNaN(num) && num > 0) totalDonasi += num;
+    });
+  }
 
   // ── Harapan / pesan (opsional) ─────────────────────────────────────────
   var harapan = [];
@@ -92,6 +104,7 @@ function doGet() {
     total       : total,
     perAngkatan : perAngkatan,
     harapan     : harapan,
+    totalDonasi : totalDonasi,
     updated     : new Date().toISOString()
   };
 
