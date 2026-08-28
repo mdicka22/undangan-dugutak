@@ -21,22 +21,21 @@ navLinks.querySelectorAll('a').forEach(link => {
 // ══════════ MOTION PREFERENCE ══════════
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ── Chart kehadiran per angkatan (dipakai data cadangan & live) ──
+// ── Chart pendaftar per angkatan (dipakai data cadangan & live) ──
+// Data format: { y: '2012', count: 15 }
 function renderAngkatan(container, data) {
   if (!container || !Array.isArray(data)) return;
-  var maxTotal = Math.max.apply(null, data.map(function (d) { return d.ikut + d.ragu + d.tidak; })) || 1;
+  var maxVal = Math.max.apply(null, data.map(function (d) { return d.count || 0; })) || 1;
   container.innerHTML = '';
   data.forEach(function (d) {
-    var total = d.ikut + d.ragu + d.tidak;
+    var count = d.count || 0;
     var row = document.createElement('div'); row.className = 'agk__row';
     row.innerHTML =
       '<span class="agk__year">' + d.y + '</span>' +
       '<div class="agk__bar">' +
-        '<div class="agk__seg agk__seg--ikut" data-w="' + (d.ikut / maxTotal * 100) + '" title="Ikut: ' + d.ikut + '"></div>' +
-        '<div class="agk__seg agk__seg--ragu" data-w="' + (d.ragu / maxTotal * 100) + '" title="Ragu-ragu: ' + d.ragu + '"></div>' +
-        '<div class="agk__seg agk__seg--tidak" data-w="' + (d.tidak / maxTotal * 100) + '" title="Tidak: ' + d.tidak + '"></div>' +
+        '<div class="agk__seg agk__seg--ikut" data-w="' + (count / maxVal * 100) + '" title="Pendaftar: ' + count + '"></div>' +
       '</div>' +
-      '<span class="agk__total">' + total + '</span>';
+      '<span class="agk__total">' + count + '</span>';
     container.appendChild(row);
   });
 }
@@ -249,25 +248,25 @@ updateProgress();
   setTimeout(done, hold + 1200);
 })();
 
-// ══════════ DASHBOARD HASIL SURVEI ══════════
-// >>> Untuk memperbarui angka: cukup ubah nilai di objek SURVEY di bawah ini.
-//     (Nanti bisa diganti fetch otomatis dari Google Sheet saat sudah online.)
+// ══════════ DASHBOARD PENDAFTARAN ══════════
+// Data cadangan per angkatan — ditampilkan sementara hingga live data termuat.
+// Format: { y: 'YYYY', count: N }
 (function () {
-  const section = document.getElementById('survei');
+  const section = document.getElementById('pendaftaran');
   if (!section) return;
 
-  // Data cadangan per angkatan (dipakai bila koneksi live gagal). Ikut = Sangat+Berminat.
+  // Data cadangan awal (0 semua) — diisi oleh live data dari Apps Script.
   const FALLBACK_ANGKATAN = [
-    { y: '2012', ikut: 15, ragu: 4, tidak: 3 },
-    { y: '2013', ikut: 5,  ragu: 1, tidak: 0 },
-    { y: '2014', ikut: 8,  ragu: 2, tidak: 1 },
-    { y: '2015', ikut: 8,  ragu: 0, tidak: 0 },
-    { y: '2016', ikut: 6,  ragu: 1, tidak: 0 },
-    { y: '2017', ikut: 11, ragu: 3, tidak: 1 },
-    { y: '2018', ikut: 11, ragu: 1, tidak: 0 },
-    { y: '2019', ikut: 6,  ragu: 1, tidak: 0 },
-    { y: '2020', ikut: 8,  ragu: 1, tidak: 0 },
-    { y: '2021', ikut: 5,  ragu: 2, tidak: 2 },
+    { y: '2012', count: 0 },
+    { y: '2013', count: 0 },
+    { y: '2014', count: 0 },
+    { y: '2015', count: 0 },
+    { y: '2016', count: 0 },
+    { y: '2017', count: 0 },
+    { y: '2018', count: 0 },
+    { y: '2019', count: 0 },
+    { y: '2020', count: 0 },
+    { y: '2021', count: 0 },
   ];
   const agkChart = document.getElementById('agkChart');
   renderAngkatan(agkChart, FALLBACK_ANGKATAN);
@@ -299,7 +298,8 @@ updateProgress();
 })();
 
 // ══════════ DINDING HARAPAN ALUMNI ══════════
-// >>> Sumber kutipan (dari kolom "Harapan" survei). Nanti bisa diganti fetch dari Google Sheet.
+// Kutipan langsung dari responden survei (data statis dari form survei lama).
+// Bila form registrasi baru punya kolom "harapan", akan otomatis diperbarui oleh live update.
 (function () {
   const wall = document.getElementById('wall');
   if (!wall) return;
@@ -415,7 +415,7 @@ updateProgress();
   }
   function card(q) {
     const fig = document.createElement('figure'); fig.className = 'wq';
-    const mark = document.createElement('div'); mark.className = 'wq__mark'; mark.textContent = '“';
+    const mark = document.createElement('div'); mark.className = 'wq__mark'; mark.textContent = '"';
     const p = document.createElement('p'); p.className = 'wq__text'; p.textContent = q.t;
     const cap = document.createElement('figcaption'); cap.className = 'wq__by';
     const meta = document.createElement('span'); meta.className = 'wq__meta';
@@ -433,10 +433,12 @@ updateProgress();
 })();
 
 // ══════════ LIVE UPDATE dari Google Sheet (via Apps Script) ══════════
-// Statistik & harapan tersambung ke Apps Script → update otomatis tiap ada responden baru.
+// Statistik pendaftaran tersambung ke Apps Script → update otomatis tiap ada peserta baru.
 // Kalau koneksi gagal (mis. offline), website tetap pakai data cadangan yang sudah tertanam.
+// >>> SETELAH REDEPLOY Apps Script (update GID), URL /exec biasanya TIDAK BERUBAH
+//     selama masih proyek yang sama. Ganti URL di bawah hanya jika membuat proyek baru.
 (function () {
-  const LIVE_DATA_URL = 'https://script.google.com/macros/s/AKfycbzVUgrS89UZV0wChMlR2Hh2iUnf6R7dqsAMUrsKGXDMSbDCh7fCGgRsv5vqNlNnAShl/exec';
+  const LIVE_DATA_URL = 'https://script.google.com/macros/s/AKfycby2112AWn0elif9bZnAHrD9AtIkoG7wP5vx222lOOCSw1id7FGGpOo463JwcZG5CsM1/exec';
   if (!LIVE_DATA_URL) return;
 
   const PHOTO = { 'Muhammad Dicka Andrian': 'dicka.jpeg', 'Siti Fadhillah': 'siti.jpeg' };
@@ -458,7 +460,7 @@ updateProgress();
   }
   function card(q) {
     const fig = document.createElement('figure'); fig.className = 'wq';
-    const mark = document.createElement('div'); mark.className = 'wq__mark'; mark.textContent = '“';
+    const mark = document.createElement('div'); mark.className = 'wq__mark'; mark.textContent = '"';
     const p = document.createElement('p'); p.className = 'wq__text'; p.textContent = q.t;
     const cap = document.createElement('figcaption'); cap.className = 'wq__by';
     const meta = document.createElement('span'); meta.className = 'wq__meta';
@@ -474,44 +476,45 @@ updateProgress();
     const copies = reduceMotion ? 1 : 2;
     for (let c = 0; c < copies; c++) harapan.forEach((q, i) => tracks[i % 2].appendChild(card(q)));
   }
-  function renderBars(chart, data) {
-    const max = Math.max.apply(null, data.map(d => d.value)) || 1;
-    const wrap = chart.querySelector('.bars'); if (!wrap) return;
-    wrap.innerHTML = '';
-    data.forEach((d, i) => {
-      const row = document.createElement('div'); row.className = 'bar' + (i === 0 ? ' bar--top' : '');
-      row.innerHTML = '<div class="bar__head"><span class="bar__lbl">' + d.label + '</span><span class="bar__val">' + d.value + '</span></div><div class="bar__track"><div class="bar__fill"></div></div>';
-      wrap.appendChild(row);
-      const fill = row.querySelector('.bar__fill');
-      requestAnimationFrame(() => { fill.style.width = (d.value / max * 100) + '%'; });
-    });
-  }
+
   function setCounter(el, val) {
     if (val == null) return;
     el.setAttribute('data-count', val);
     if (el.textContent !== '0') el.textContent = val; // sudah tampil → perbarui langsung
   }
+
   function apply(d) {
-    const sig = JSON.stringify([d.total, d.ringkas, d.angkatan, (d.harapan || []).length]);
+    // d = { total, perAngkatan: [{y, count}], harapan: [{n,a,t}], updated }
+    const sig = JSON.stringify([d.total, d.perAngkatan, (d.harapan || []).length]);
     if (sig === lastSig) return; // tak ada perubahan → jangan render ulang
     lastSig = sig;
 
+    // Perbarui angka total pendaftar
     const big = document.querySelector('.survey__big [data-count]');
     if (big) setCounter(big, d.total);
-    const minis = document.querySelectorAll('.mini__num');
-    if (minis.length === 3 && d.ringkas) {
-      setCounter(minis[0], d.ringkas.berminat);
-      setCounter(minis[1], d.ringkas.ragu);
-      setCounter(minis[2], d.ringkas.tidak);
-    }
-    const leadStrong = document.querySelector('.survey__lead strong');
-    if (leadStrong && d.total != null) leadStrong.textContent = d.total + ' responden';
+
+    // Perbarui teks lead
+    const leadStrong = document.querySelector('#pendaftaran .survey__lead strong');
+    if (leadStrong && d.total != null) leadStrong.textContent = d.total + ' pendaftar';
+
+    // Perbarui catatan bawah
     const note = document.querySelector('.survey__note');
-    if (note && d.total != null) note.textContent = 'Data terkini · ' + d.total + ' responden · diperbarui otomatis';
+    if (note && d.total != null) note.textContent = 'Data terkini · ' + d.total + ' pendaftar · diperbarui otomatis';
+
+    // Perbarui chart per angkatan
     const agk = document.getElementById('agkChart');
-    if (agk && Array.isArray(d.angkatan) && d.angkatan.length) { renderAngkatan(agk, d.angkatan); growAngkatan(agk); }
-    if (!wallDone && Array.isArray(d.harapan) && d.harapan.length) { buildWall(d.harapan); wallDone = true; }
+    if (agk && Array.isArray(d.perAngkatan) && d.perAngkatan.length) {
+      renderAngkatan(agk, d.perAngkatan);
+      growAngkatan(agk);
+    }
+
+    // Perbarui dinding harapan (hanya jika form baru punya kolom harapan & ada isinya)
+    if (!wallDone && Array.isArray(d.harapan) && d.harapan.length) {
+      buildWall(d.harapan);
+      wallDone = true;
+    }
   }
+
   function fetchLive(retries) {
     fetch(LIVE_DATA_URL)
       .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
