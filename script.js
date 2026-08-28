@@ -437,6 +437,48 @@ updateProgress();
 // Kalau koneksi gagal (mis. offline), website tetap pakai data cadangan yang sudah tertanam.
 // >>> SETELAH REDEPLOY Apps Script (update GID), URL /exec biasanya TIDAK BERUBAH
 //     selama masih proyek yang sama. Ganti URL di bawah hanya jika membuat proyek baru.
+function getAmountNumber(text) {
+  return parseInt(String(text || '').replace(/[^0-9]/g, ''), 10) || 0;
+}
+
+function animateDonationAmount(el, target) {
+  if (!el || target == null) return;
+
+  const next = parseInt(target, 10) || 0;
+  const current = getAmountNumber(el.textContent);
+  el.setAttribute('data-amount', next);
+
+  if (reduceMotion || current === next) {
+    el.textContent = next.toLocaleString('id-ID');
+    el.dataset.animated = '1';
+    return;
+  }
+
+  if (el._donasiRaf) cancelAnimationFrame(el._donasiRaf);
+
+  const start = el.dataset.animated === '1' ? current : 0;
+  const change = next - start;
+  const duration = Math.min(2400, Math.max(1200, Math.abs(change) / 900000));
+  const t0 = performance.now();
+
+  function step(t) {
+    const p = Math.min(1, (t - t0) / duration);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const value = Math.round(start + change * eased);
+    el.textContent = value.toLocaleString('id-ID');
+
+    if (p < 1) {
+      el._donasiRaf = requestAnimationFrame(step);
+    } else {
+      el.textContent = next.toLocaleString('id-ID');
+      el.dataset.animated = '1';
+      el._donasiRaf = null;
+    }
+  }
+
+  el._donasiRaf = requestAnimationFrame(step);
+}
+
 (function () {
   const LIVE_DATA_URL = 'https://script.google.com/macros/s/AKfycby2112AWn0elif9bZnAHrD9AtIkoG7wP5vx222lOOCSw1id7FGGpOo463JwcZG5CsM1/exec';
   if (!LIVE_DATA_URL) return;
@@ -512,10 +554,7 @@ updateProgress();
     if (d.totalDonasi != null) {
       const donasiEl = document.getElementById('donasiNum');
       if (donasiEl) {
-        donasiEl.setAttribute('data-amount', d.totalDonasi);
-        if (d.totalDonasi > 0) {
-          donasiEl.textContent = d.totalDonasi.toLocaleString('id-ID');
-        }
+        animateDonationAmount(donasiEl, d.totalDonasi);
       }
     }
 
@@ -540,16 +579,8 @@ updateProgress();
 (function () {
   const el = document.getElementById('donasiNum');
   if (!el) return;
-  const target = parseInt(el.dataset.amount, 10) || 0;
   function run() {
-    if (reduceMotion || target === 0) { el.textContent = target.toLocaleString('id-ID'); return; }
-    const dur = 1400, t0 = performance.now();
-    (function step(t) {
-      const p = Math.min(1, (t - t0) / dur);
-      const e = 1 - Math.pow(1 - p, 3);
-      el.textContent = Math.round(target * e).toLocaleString('id-ID');
-      if (p < 1) requestAnimationFrame(step);
-    })(t0);
+    animateDonationAmount(el, el.dataset.amount);
   }
   new IntersectionObserver((entries, obs) => {
     entries.forEach(e => { if (e.isIntersecting) { run(); obs.disconnect(); } });

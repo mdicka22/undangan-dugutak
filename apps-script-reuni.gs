@@ -70,6 +70,10 @@ function doGet() {
     'donasi',
     'jumlah donasi'
   ]);
+  // Pada sheet ini "Jumlah yang ditransfer" berada di kolom N (index 13).
+  // Fallback ini menjaga total donasi tetap terbaca jika header dari Google Form
+  // punya spasi/karakter tersembunyi yang gagal dicocokkan.
+  if (colDonasi < 0 && headers.length > 13) colDonasi = 13;
 
   // ── Pendaftar per angkatan ─────────────────────────────────────────────
   var byYear = {};
