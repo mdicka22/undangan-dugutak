@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Reuni IKATP USK">
+  <defs>
+    <linearGradient id="bg" x1="96" y1="64" x2="416" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#171715"/>
+      <stop offset="1" stop-color="#070706"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="150" y1="104" x2="368" y2="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f1df9d"/>
+      <stop offset="0.48" stop-color="#c9a84c"/>
+      <stop offset="1" stop-color="#8f6f21"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <path d="M256 50 434 153v206L256 462 78 359V153L256 50Z" fill="none" stroke="url(#gold)" stroke-width="22" stroke-linejoin="round"/>
+  <path d="M164 335 256 151l92 184H292l-36-74-36 74h-56Z" fill="none" stroke="url(#gold)" stroke-width="22" stroke-linejoin="round"/>
+  <path d="M256 151v184" fill="none" stroke="url(#gold)" stroke-width="22" stroke-linecap="round"/>
+</svg>
