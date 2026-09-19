@@ -331,10 +331,15 @@ img { display: block; max-width: 100%; }
   animation: tbaPulse 2.8s ease-in-out infinite;
 }
 .teaser__lead { color: var(--tdim); font-size: 1.02rem; margin-top: 1.4rem; }
-.teaser__pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.7rem; margin-top: 1.8rem; }
+.teaser__pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.7rem; margin: 1.8rem auto 0; max-width: 590px; }
 .teaser__pills span {
-  font-family: var(--fm); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--gold); border: 1px solid rgba(201,168,76,0.4); border-radius: 100px; padding: 0.5rem 1.1rem;
+  display: inline-flex; align-items: center; gap: 0.48rem;
+  font-family: var(--fm); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold); background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.4);
+  border-radius: 100px; padding: 0.58rem 1rem; transition: border-color 0.25s, background 0.25s, transform 0.25s;
+}
+.teaser__pills span:hover { background: rgba(201,168,76,0.13); border-color: var(--gold); transform: translateY(-2px); }
+.teaser__pill-icon { font-family: "Apple Color Emoji", "Segoe UI Emoji", sans-serif; font-size: 0.9rem; font-style: normal; line-height: 1; letter-spacing: 0; }
 }
 .teaser__note {
   font-family: var(--fm); font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
