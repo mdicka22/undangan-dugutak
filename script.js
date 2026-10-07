@@ -54,7 +54,6 @@ const EVENT_DATE = '2026-12-19T08:00:00+07:00';
 
 const cdUnits = document.getElementById('cdUnits');
 const cdTba = document.getElementById('cdTba');
-const cdDate = document.getElementById('cdDate');
 const el = {
   d: document.getElementById('cd-d'),
   h: document.getElementById('cd-h'),
@@ -77,8 +76,6 @@ if (EVENT_DATE) {
   cdTba.style.display = 'none';
   cdUnits.style.display = '';
   const target = new Date(EVENT_DATE).getTime();
-  const label = new Date(EVENT_DATE).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-  cdDate.innerHTML = label + ' &middot; Pantai Lepon, Aceh';
   const tick = () => {
     let diff = Math.max(0, target - Date.now());
     const d = Math.floor(diff / 86400000); diff -= d * 86400000;
@@ -96,7 +93,6 @@ if (EVENT_DATE) {
   // MODE TBA (jadwal belum diumumkan)
   cdUnits.style.display = 'none';
   cdTba.style.display = '';
-  cdDate.innerHTML = '19 Desember 2026 &middot; Pantai Lepon, Aceh';
 }
 
 // ══════════ PARTIKEL BARA EMAS (hero) — ringan ══════════
